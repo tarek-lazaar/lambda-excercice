@@ -1,0 +1,5 @@
+{
+  "S3Bucket": "bucketoftarek8786",
+  "S3Prefix": "pets.json",
+  "PetName": "Purrsloud"
+}
