@@ -1,0 +1,1 @@
+script_filename = "lambda-image"
