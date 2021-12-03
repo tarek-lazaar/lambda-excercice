@@ -9,10 +9,13 @@ def lambda_handler(event, context):
     s3 = boto3.client('s3')
     dynamodb = boto3.resource('dynamodb')
 
-    # record = event['Records']
+    #event decoding
+    new_msg = event['Records'][0]['Sns']['Message']
+    sns_msg = json.loads(new_msg)
+    #extract bucket and file names
+    s3bucket = sns_msg['detail']['requestParameters']["bucketName"]
+    s3object = sns_msg['detail']['requestParameters']["key"]
 
-    s3bucket = event["detail"]["requestParameters"]["bucketName"]
-    s3object = event["detail"]["requestParameters"]["key"]
 
     print(s3bucket, s3object)
 
