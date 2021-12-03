@@ -31,7 +31,7 @@ def lambda_handler(event, context):
         metadata_new = {str(key): str(value) for key, value in keys}
 
         # adding value for key "Image" created in the "Images" table
-        metadata_new["Image"] = "myimage"
+        metadata_new["Image"] = s3object.split(".")[0]
 
     table = dynamodb.Table('Images')
 
