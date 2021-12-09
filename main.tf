@@ -7,7 +7,7 @@ terraform {
   backend "s3" {
     bucket         = "bucketoftarek8786"
     key            = "terraform.tfstates"
-    dynamodb_table = "terraform-db-table"
+    dynamodb_table = "terraform-lock"
   }
 }
 
