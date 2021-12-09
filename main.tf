@@ -5,16 +5,16 @@ provider "aws" {
 terraform {
 
   backend "s3" {
-    bucket = "bucketoftarek8786"
-    key    = "terraform.tfstates"
+    bucket         = "bucketoftarek8786"
+    key            = "terraform.tfstates"
     dynamodb_table = "terraform-db-table"
   }
 }
 
 
 resource "aws_iam_role" "lambda_role" {
- name   = "iam_role_lambda_function"
- assume_role_policy = <<EOF
+  name               = "iam_role_lambda_function"
+  assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -35,9 +35,9 @@ EOF
 
 resource "aws_iam_policy" "lambda_logging" {
 
-  name         = "iam_policy_lambda_1"
-  path         = "/"
-  description  = "IAM policy for new lambda"
+  name        = "iam_policy_lambda_1"
+  path        = "/"
+  description = "IAM policy for new lambda"
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -58,25 +58,25 @@ resource "aws_iam_policy" "lambda_logging" {
         ],
         "Effect" : "Allow",
         "Resource" : "arn:aws:s3:::*"
-      } ,
+      },
       {
-            "Sid": "SpecificTable",
-            "Effect": "Allow",
-            "Action": [
-                "dynamodb:BatchGet*",
-                "dynamodb:DescribeStream",
-                "dynamodb:DescribeTable",
-                "dynamodb:Get*",
-                "dynamodb:Query",
-                "dynamodb:Scan",
-                "dynamodb:BatchWrite*",
-                "dynamodb:CreateTable",
-                "dynamodb:Delete*",
-                "dynamodb:Update*",
-                "dynamodb:PutItem"
-            ],
-            "Resource": "arn:aws:dynamodb:*:*:table/Images"
-        }
+        "Sid" : "SpecificTable",
+        "Effect" : "Allow",
+        "Action" : [
+          "dynamodb:BatchGet*",
+          "dynamodb:DescribeStream",
+          "dynamodb:DescribeTable",
+          "dynamodb:Get*",
+          "dynamodb:Query",
+          "dynamodb:Scan",
+          "dynamodb:BatchWrite*",
+          "dynamodb:CreateTable",
+          "dynamodb:Delete*",
+          "dynamodb:Update*",
+          "dynamodb:PutItem"
+        ],
+        "Resource" : "arn:aws:dynamodb:*:*:table/Images"
+      }
     ]
   })
 }
@@ -84,8 +84,8 @@ resource "aws_iam_policy" "lambda_logging" {
 # Policy Attachment on the role.
 
 resource "aws_iam_role_policy_attachment" "policy_attach" {
-  role        = aws_iam_role.lambda_role.name
-  policy_arn  = aws_iam_policy.lambda_logging.arn
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = aws_iam_policy.lambda_logging.arn
 }
 
 #creation of lambda function
@@ -97,12 +97,12 @@ data "archive_file" "image_script" {
 
 
 resource "aws_lambda_function" "lambdaNew" {
-  filename                       = data.archive_file.image_script.output_path
-  function_name                  = var.script_filename
-  handler                        = "${var.script_filename}.lambda_handler"
-  role                           = aws_iam_role.lambda_role.arn
-  runtime                        = "python3.8"
-  source_code_hash               = data.archive_file.image_script.output_base64sha256
+  filename         = data.archive_file.image_script.output_path
+  function_name    = var.script_filename
+  handler          = "${var.script_filename}.lambda_handler"
+  role             = aws_iam_role.lambda_role.arn
+  runtime          = "python3.8"
+  source_code_hash = data.archive_file.image_script.output_base64sha256
 
 }
 #create cloud watch rule with S3 source event
@@ -172,9 +172,9 @@ resource "aws_sns_topic_subscription" "invoke_with_sns" {
 #allow notification coming from sns to lambda
 
 resource "aws_lambda_permission" "with_sns" {
-    statement_id = "AllowExecutionFromSNS"
-    action = "lambda:InvokeFunction"
-    function_name = aws_lambda_function.lambdaNew.arn
-    principal = "sns.amazonaws.com"
-    source_arn = aws_sns_topic.event_upload.arn
+  statement_id  = "AllowExecutionFromSNS"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.lambdaNew.arn
+  principal     = "sns.amazonaws.com"
+  source_arn    = aws_sns_topic.event_upload.arn
 }
